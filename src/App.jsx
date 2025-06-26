@@ -8,7 +8,7 @@ function App() {
     <>
       <div>
         <h1 className='text-4xl text-red-800 font-bold text-center'>Welcome to course ms</h1>
-        <p>Updated Mohamud</p>
+        <p>Updated Mohamud and Ahmed</p>
       </div>
     </>
   )
