@@ -1,17 +1,23 @@
-import { useState } from 'react'
-
-import './App.css'
-
+import {BrowserRouter, Routes, Route,  } from "react-router-dom";
+import "./App.css";
+import Headers from "./Headers/Headers";
+import Home from "./Pages/Home";
+import Login from "./Pages/Login";  
+import SignUp from "./Pages/SignUp";
 function App() {
-
   return (
     <>
-      <div>
-        <h1 className='text-4xl text-red-800 font-bold text-center'>Welcome to course ms</h1>
-        <p>Updated Mohamud and Ahmed</p>
-      </div>
+    
+      <BrowserRouter>
+      <Headers />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/Login" element={<Login />} />
+          <Route path="/SignUp" element={<SignUp />} />
+        </Routes>
+      </BrowserRouter>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
