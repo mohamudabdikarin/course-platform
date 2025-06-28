@@ -1,13 +1,11 @@
 // src/pages/Settings.jsx
 import React, { useState } from 'react';
-import { FiUser, FiSun, FiShield } from 'react-icons/fi';
+import { FiUser, FiShield } from 'react-icons/fi';
 import ProfileSettings from '../components/settings/ProfileSettings';
-import AppearanceSettings from '../components/settings/AppearanceSettings';
 import SecuritySettings from '../components/settings/SecuritySettings';
 
 const TABS = {
   PROFILE: 'Profile',
-  APPEARANCE: 'Appearance',
   SECURITY: 'Security',
 };
 
@@ -16,14 +14,11 @@ const Settings = () => {
 
   const tabsConfig = [
     { id: TABS.PROFILE, icon: FiUser, label: 'Profile' },
-    { id: TABS.APPEARANCE, icon: FiSun, label: 'Appearance' },
     { id: TABS.SECURITY, icon: FiShield, label: 'Security' },
   ];
 
   const renderContent = () => {
     switch (activeTab) {
-      case TABS.APPEARANCE:
-        return <AppearanceSettings />;
       case TABS.SECURITY:
         return <SecuritySettings />;
       case TABS.PROFILE:

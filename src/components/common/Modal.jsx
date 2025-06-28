@@ -19,7 +19,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 50, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="bg-light-card dark:bg-dark-card rounded-lg shadow-xl w-full max-w-lg"
+          className="bg-light-card dark:bg-dark-card rounded-lg shadow-xl w-full max-w-lg md:max-w-2xl"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
