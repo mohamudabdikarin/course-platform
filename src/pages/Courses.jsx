@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { FiPlusCircle, FiEdit, FiTrash2, FiEye, FiSearch } from 'react-icons/fi';
 import { getCourses, addCourse, updateCourse, deleteCourse } from '../utils/mockApi';
@@ -93,8 +92,6 @@ const Courses = () => {
     c.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
   );
 
-
-
   if (loading) return <Spinner size="lg" className="h-full" />;
 
   return (
@@ -143,36 +140,145 @@ const Courses = () => {
 const CourseFormModal = ({ isOpen, onClose, onSave, course }) => {
     const [title, setTitle] = useState('');
     const [status, setStatus] = useState('Draft');
+    const [description, setDescription] = useState('');
+    const [fee, setFee] = useState('');
+    const [category, setCategory] = useState('');
+    const [duration, setDuration] = useState('');
+    const [level, setLevel] = useState('Beginner');
+    const [thumbnail, setThumbnail] = useState(null);
+    const [thumbnailPreview, setThumbnailPreview] = useState('');
+    const fileInputRef = React.useRef(null);
 
     useEffect(() => {
         if (course) {
-            setTitle(course.title);
-            setStatus(course.status);
+            setTitle(course.title || '');
+            setStatus(course.status || 'Draft');
+            setDescription(course.description || '');
+            setFee(course.fee || '');
+            setCategory(course.category || '');
+            setDuration(course.duration || '');
+            setLevel(course.level || 'Beginner');
+            setThumbnail(null);
+            setThumbnailPreview(course.image || '');
         } else {
             setTitle('');
             setStatus('Draft');
+            setDescription('');
+            setFee('');
+            setCategory('');
+            setDuration('');
+            setLevel('Beginner');
+            setThumbnail(null);
+            setThumbnailPreview('');
         }
     }, [course]);
 
+    const handleThumbnailChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!['image/jpeg', 'image/png', 'image/jpg', 'image/gif'].includes(file.type)) {
+            toast.error('Please select a valid image file (PNG, JPG, GIF)');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('Image must be less than 5MB');
+            return;
+        }
+        setThumbnail(file);
+        const reader = new FileReader();
+        reader.onloadend = () => setThumbnailPreview(reader.result);
+        reader.readAsDataURL(file);
+    };
+
+    const handleRemoveThumbnail = () => {
+        setThumbnail(null);
+        setThumbnailPreview('');
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave({ title, status });
+        const formData = {
+            title,
+            status,
+            description,
+            fee,
+            category,
+            duration,
+            level,
+        };
+        if (thumbnailPreview) {
+            formData.image = thumbnailPreview;
+        }
+        onSave(formData);
     };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={course ? "Edit Course" : "Add New Course"}>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
+                {/* Thumbnail Upload */}
                 <div>
-                    <label htmlFor="title" className="block text-sm font-medium mb-1">Course Title</label>
-                    <input id="title" type="text" value={title} onChange={e => setTitle(e.target.value)} required className="w-full p-2 rounded bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary" />
+                    <label className="block text-sm font-medium mb-1">Course Thumbnail</label>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                        {thumbnailPreview ? (
+                            <div className="relative mb-2 sm:mb-0">
+                                <img src={thumbnailPreview} alt="Thumbnail Preview" className="w-20 h-20 object-cover rounded-lg border" />
+                                <button type="button" onClick={handleRemoveThumbnail} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors">&times;</button>
+                            </div>
+                        ) : (
+                            <div className="w-20 h-20 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg border text-gray-400 mb-2 sm:mb-0">No Image</div>
+                        )}
+                        <div className="flex-1">
+                            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleThumbnailChange} className="block w-full" />
+                            <p className="text-xs text-light-subtext dark:text-dark-subtext mt-1">PNG, JPG, GIF up to 5MB.</p>
+                        </div>
+                    </div>
                 </div>
+                {/* Responsive Grid for Inputs */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+                    {/* Title */}
+                    <div>
+                        <label htmlFor="title" className="block text-sm font-medium mb-1">Course Title</label>
+                        <input id="title" type="text" value={title} onChange={e => setTitle(e.target.value)} required className="w-full p-2 rounded bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary" />
+                    </div>
+                    {/* Category */}
+                    <div>
+                        <label htmlFor="category" className="block text-sm font-medium mb-1">Category</label>
+                        <input id="category" type="text" value={category} onChange={e => setCategory(e.target.value)} required className="w-full p-2 rounded bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary" />
+                    </div>
+                    {/* Fee */}
+                    <div>
+                        <label htmlFor="fee" className="block text-sm font-medium mb-1">Course Fee (USD)</label>
+                        <input id="fee" type="number" min="0" value={fee} onChange={e => setFee(e.target.value)} required className="w-full p-2 pl-3 rounded bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary appearance-none" />
+                    </div>
+                    {/* Duration */}
+                    <div>
+                        <label htmlFor="duration" className="block text-sm font-medium mb-1">Duration (e.g. 10h 30m)</label>
+                        <input id="duration" type="text" value={duration} onChange={e => setDuration(e.target.value)} required className="w-full p-2 rounded bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary" />
+                    </div>
+                    {/* Level */}
+                    <div>
+                        <label htmlFor="level" className="block text-sm font-medium mb-1">Level</label>
+                        <select id="level" value={level} onChange={e => setLevel(e.target.value)} className="w-full p-2 rounded bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option>Beginner</option>
+                            <option>Intermediate</option>
+                            <option>Advanced</option>
+                        </select>
+                    </div>
+                    {/* Status */}
+                    <div>
+                        <label htmlFor="status" className="block text-sm font-medium mb-1">Status</label>
+                        <select id="status" value={status} onChange={e => setStatus(e.target.value)} className="w-full p-2 rounded bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option>Draft</option>
+                            <option>Published</option>
+                            <option>Archived</option>
+                        </select>
+                    </div>
+                </div>
+                {/* Description (full width) */}
                 <div>
-                    <label htmlFor="status" className="block text-sm font-medium mb-1">Status</label>
-                    <select id="status" value={status} onChange={e => setStatus(e.target.value)} className="w-full p-2 rounded bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
-                        <option>Draft</option>
-                        <option>Published</option>
-                        <option>Archived</option>
-                    </select>
+                    <label htmlFor="description" className="block text-sm font-medium mb-1">Description</label>
+                    <textarea id="description" value={description} onChange={e => setDescription(e.target.value)} required rows={3} className="w-full p-2 rounded bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary" />
                 </div>
                 <div className="flex justify-end gap-3 pt-4">
                     <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>

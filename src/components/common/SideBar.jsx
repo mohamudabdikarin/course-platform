@@ -1,8 +1,9 @@
 // src/components/common/Sidebar.jsx
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { FiGrid, FiBookOpen, FiMessageSquare, FiSettings, FiLogOut, FiX } from 'react-icons/fi';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 
 const navItems = [
   { icon: FiGrid, label: 'Dashboard', path: '/' },
@@ -13,10 +14,17 @@ const navItems = [
 
 const Sidebar = ({ isSidebarOpen, setSidebarOpen }) => {
   const { theme } = useTheme();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const baseLinkClasses = "flex items-center px-4 py-3 text-lg font-medium rounded-lg transition-colors duration-200";
   const inactiveLinkClasses = "text-light-subtext hover:bg-gray-200 dark:text-dark-subtext dark:hover:bg-gray-700";
   const activeLinkClasses = "bg-primary text-white shadow-md";
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <>
@@ -54,7 +62,10 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }) => {
         </nav>
 
         <div className="mt-auto">
-          <button className="flex items-center w-full px-4 py-3 text-lg font-medium rounded-lg text-danger hover:bg-danger/10 transition-colors duration-200">
+          <button 
+            onClick={handleLogout}
+            className="flex items-center w-full px-4 py-3 text-lg font-medium rounded-lg text-danger hover:bg-danger/10 transition-colors duration-200"
+          >
             <FiLogOut className="mr-4" size={22} />
             <span>Logout</span>
           </button>

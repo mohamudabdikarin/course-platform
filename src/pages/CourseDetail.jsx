@@ -5,6 +5,7 @@ import { FiBook, FiUsers, FiStar, FiFileText, FiVideo, FiLink, FiUpload, FiDownl
 import { getCourseById, getStudentsByCourse, getFeedback } from '../utils/mockApi';
 import Spinner from '../components/common/Spinner';
 import Card from '../components/common/Card';
+import Button from '../components/common/Button';
 
 const CourseDetail = () => {
     const { courseId } = useParams();

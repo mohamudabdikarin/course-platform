@@ -16,7 +16,7 @@ function Login() {
   const location = useLocation();
 
   // Declare 'from' BEFORE the useEffect hook
-  const from = location.state?.from?.pathname || '/dashboard';
+  const from = location.state?.from?.pathname || '/';
   
   useEffect(() => {
     if (user) {

@@ -8,4 +8,14 @@
   body {
     @apply bg-gray-100 text-light-text dark:bg-dark-bg dark:text-dark-text transition-colors duration-300;
   }
+
+  :root {
+    --toast-bg: #ffffff;
+    --toast-color: #1f2937;
+  }
+
+  .dark {
+    --toast-bg: #1f2937;
+    --toast-color: #f9fafb;
+  }
 }
